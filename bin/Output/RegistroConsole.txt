@@ -1,0 +1,27 @@
+
+** Registro de tela do console da sua IDE após a execução da classe "Main"  **
+
+
+PS C:\Users\Usuario\Documents\programacao\ADS-Curt\Atividade1\Java\Atividade>  & 'C:\Program Files\Java\jdk-17\bin\java.exe' '-XX:+ShowCodeDetailsInExceptionMessages' '-cp' 'C:\Users\Usuario\Documents\programacao\ADS-Curt\Atividade1\Java\Atividade\bin' 'Main' 
+------------------------------
+Tipo: Caminhão
+Placa: ABC1D23
+Ano: 2022
+Eixos: 6
+------------------------------
+Tipo: Ônibus
+Placa: DEF4G56
+Ano: 2023
+Assentos: 42
+------------------------------
+Tipo: Caminhão
+Placa: GHI7J89
+Ano: 2024
+Eixos: 8
+------------------------------
+Tipo: Ônibus
+Placa: KLM1N23
+Ano: 2025
+Assentos: 50
+------------------------------
+Total de veículos: 4
