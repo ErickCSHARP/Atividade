@@ -97,24 +97,101 @@ public class ContaUniversitaria extends ContaEspecial
 ## 2. Questões para o aluno
 
 1\. Qual das duas classes é a superclasse? Justifique sua resposta com base no código.
+<details>
+  <summary>Resposta</summary>
+
+**Superclasse** \
+`ContaEspecial`, pois é a classe estendida pela classe `ContaUniversitaria` e fornece atributos e métodos que ela pode herdar.
+
+</details>
+<br><br>
 
 2\. Qual das duas classes é a subclasse (classe filha)? Qual elemento do código comprova isso?
+<details>
+  <summary>Resposta</summary>
+
+**Subclasse** \
+`ContaUniversitaria`, pois a declaração `extends ContaEspecial` indica que ela herda de `ContaEspecial`.
+</details>
+<br><br>
 
 3\. Quais métodos da classe filha sobrescrevem métodos da classe pai? Explique como você identificou cada um.
+<details>
+  <summary>Resposta</summary>
+
+**Métodos sobrescritos** \
+
+- `sacar(double valor)`
+- `consultar()`
+
+Ambos possuem a mesma assinatura dos métodos herdados e são marcados com `@Override`.
+</details>
+<br><br>
 
 4\. Quais métodos permitem consultar os atributos privados da superclasse sem acessá-los diretamente?
+<details>
+  <summary>Resposta</summary>
+
+**
+Os métodos `getTitular()`, `getSaldo()` e `getLimite()` permitem acessar os atributos privados da superclasse de forma indireta.
+
+- `getTitular()`
+- `getSaldo()`
+- `getLimite()`
+
+São métodos getters, que permitem consultar os valores dos atributos privados.
+
+</details>  
+<br><br>
 
 5\. Os atributos titular, saldo e limite são protected? Explique qual é o modificador de acesso utilizado e por que isso importa.
+<details>
+  <summary>Resposta</summary>
+
+**Encapsulamento** \
+Os atributos são `private`, e não `protected`. Isso significa que não podem ser acessados diretamente pela subclasse. O modificador `protected` permitiria acesso direto pela subclasse.
+</details>
+<br><br>
 
 6\. A classe ContaUniversitaria pode acessar diretamente o atributo saldo? Por que ela utiliza getSaldo() em vez de acessar saldo diretamente?
+<details>
+  <summary>Resposta</summary>
+
+Não, a classe `ContaUniversitaria` não pode acessar diretamente o atributo `saldo`, pois ele é `private` na superclasse. Por isso, utiliza o método `getSaldo()` para obter o valor de forma indireta.
+</details>
+<br><br>
 
 7\. Qual é a função da palavra-chave super no construtor e nos métodos sobrescritos?
+<details>
+  <summary>Resposta</summary>
+
+A palavra-chave `super` é usada para chamar o construtor da superclasse e para acessar métodos da superclasse que foram sobrescritos na subclasse.
+</details>
+<br><br>
 
 8\. O método depositar() foi sobrescrito na classe filha? Justifique sua resposta.
+<details>
+  <summary>Resposta</summary>
+
+Não, o método `depositar()` não foi sobrescrito na classe `ContaUniversitaria`. Ele é herdado da superclasse `ContaEspecial` sem alterações.
+</details>
+<br><br>
 
 9\. Uma ContaUniversitaria também pode utilizar o método depositar(), embora ele não esteja declarado em sua classe? Explique.
+<details>
+  <summary>Resposta</summary>
+
+Sim, uma `ContaUniversitaria` pode utilizar o método `depositar()` porque ele é herdado da superclasse `ContaEspecial`.
+</details>
+<br><br>
 
 10\. Qual é a regra adicional de saque implementada pela classe ContaUniversitaria em relação à classe ContaEspecial?
+<details>
+  <summary>Resposta</summary>
+
+A classe `ContaUniversitaria` adiciona a regra de que o saque não pode resultar em um saldo menor que metade do limite negativo.
+</details>
+<br><br>
 
 &#x20;Copiar respostas
 

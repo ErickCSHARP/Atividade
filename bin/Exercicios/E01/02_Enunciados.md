@@ -90,7 +90,6 @@ public class ContaUniversitaria extends ContaEspecial
 
 ```
 
-
 ## 1. Polimorfismo na prática
 
 Considere o seguinte código:
@@ -102,9 +101,13 @@ System.out.println(conta.consultar());
 
 Questão 1 — Qual método será executado?
 
+<details>
+  <summary>Resposta</summary>
 O método `consultar()` de `ContaEspecial` ou o de `ContaUniversitaria`? Justifique.
 
 Resposta esperada: será executado o método `consultar()` de `ContaUniversitaria`, porque o objeto criado é dessa classe e o método foi sobrescrito. A variável ser do tipo `ContaEspecial` não muda o comportamento dinâmico do método.
+</details>
+
 
 ## 2. Tipo da variável versus tipo do objeto
 
@@ -118,7 +121,11 @@ System.out.println(b.consultar());
 
 Questão 2 — As duas variáveis são do mesmo tipo. Os resultados serão iguais? Por quê?
 
+<details>
+  <summary>Resposta</summary>
 Resposta esperada: não necessariamente. A primeira referência aponta para um objeto `ContaEspecial`; a segunda aponta para um objeto `ContaUniversitaria`. O método sobrescrito executado depende do tipo real do objeto.
+</details>  
+
 
 ## 3. Sobrescrita versus herança
 
@@ -130,7 +137,10 @@ System.out.println(conta.getSaldo());
 
 Questão 3 — O método `depositar()` executado pertence a qual classe? Existe polimorfismo nesse método?
 
+<details>
+  <summary>Resposta</summary>
 Resposta esperada: é executado o método herdado de `ContaEspecial`. Embora a chamada seja feita por uma referência que aponta para um objeto da subclasse, não existe sobrescrita de `depositar()` na classe filha. A herança, por si só, não significa que houve sobrescrita.
+</details>
 
 ## 4. Pegadinha: quais métodos podem ser chamados?
 
@@ -141,9 +151,12 @@ System.out.println(conta.getSemestre());
 
 Questão 4 — Esse código compila? Se o objeto é uma `ContaUniversitaria`, por que a chamada pode apresentar um problema?
 
+<details>
+  <summary>Resposta</summary>
 Resposta esperada: não compila. O compilador verifica os métodos disponíveis pelo tipo declarado da referência, `ContaEspecial`. Como `getSemestre()` só foi declarado em `ContaUniversitaria`, ele não pode ser chamado diretamente por essa referência.
 
 Essa questão testa a diferença entre o tipo de referência, que limita as chamadas disponíveis, e o tipo real do objeto, que determina a implementação dos métodos sobrescritos.
+</details>
 
 ## 5. Polimorfismo e retorno de métodos
 
@@ -157,7 +170,10 @@ public String consultar() {
 
 Questão 5 — O método da classe filha substitui completamente o método da classe pai? Explique o papel de `super.consultar()`.
 
+<details>
+  <summary>Resposta</summary>
 Resposta esperada: a implementação da filha sobrescreve a da pai, mas reutiliza explicitamente o comportamento original por meio de `super.consultar()`, acrescentando a informação do semestre.
+</details>
 
 ## 6. Polimorfismo com parâmetros
 
@@ -178,7 +194,10 @@ exibirConta(new ContaUniversitaria("Ana", 800, 300, 2));
 
 Questão 6 — Por que o mesmo método `exibirConta()` aceita objetos de duas classes diferentes? O resultado será idêntico em estrutura?
 
+<details>
+  <summary>Resposta</summary>
 Resposta esperada: porque `ContaUniversitaria` é uma subclasse de `ContaEspecial` e pode ser utilizada onde se espera uma `ContaEspecial`. O método `consultar()` executado depende do objeto recebido. O primeiro resultado não inclui o semestre; o segundo inclui.
+</details>
 
 ## 7. Polimorfismo e regras de saque
 
@@ -190,15 +209,21 @@ System.out.println(resultado);
 
 Questão 7 — Qual implementação de `sacar()` será executada primeiro? E qual será o resultado?
 
+<details>
+  <summary>Resposta</summary>
 Resposta esperada: a implementação de `ContaUniversitaria` será executada primeiro. Ela verifica a regra adicional e, se permitido, chama `super.sacar(valor)` para aproveitar as regras da superclasse.
 
 Neste exemplo, o saldo inicial é R$ 1.000, o saque é de R$ 1.200 e o limite é R$ 600. Como o saldo restante seria de R$ -200, e isso não ultrapassa metade do limite negativo de R$ -300, o saque é permitido e o resultado é `true`.
+</details>
 
 ## 8. Questão conceitual: existe polimorfismo sem herança?
 
 Questão 8 — Se a classe `ContaUniversitaria` não estendesse `ContaEspecial`, ainda seria possível usar `ContaUniversitaria` como argumento de `exibirConta(ContaEspecial conta)`?
 
+<details>
+  <summary>Resposta</summary>
 Resposta esperada: não, não com essa declaração e sem outro relacionamento de tipos compatível. Em Java, isso exigiria herança ou outro tipo compatível, como uma interface implementada por ambas as classes, com a assinatura do método adaptada para esse tipo.
+</details>
 
 ## 9. Desafio final — analise sem executar
 
