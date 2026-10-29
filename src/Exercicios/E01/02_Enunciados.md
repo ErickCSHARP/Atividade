@@ -1,4 +1,4 @@
-O ideal é fazer o aluno prever qual método será executado, diferenciar o tipo da variável do tipo do objeto e analisar o comportamento do programa.
+O ideal é fazer a pessoa prever qual método será executado, diferenciar o tipo da variável(declarado) do tipo do objeto e analisar o comportamento do programa.
 
 ## Código para análise
 
