@@ -54,6 +54,27 @@
       button:hover {
         background-color: #0056b3;
       }
+
+      /* Estilo para mensagens de erro */       
+    .card-erro {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 15px;
+        margin: 15px 0;
+        background-color: #fde8e8; /* Vermelho bem claro */
+        border: 1px solid #f8b4b4;    /* Borda vermelha suave */
+        border-radius: 6px;
+        color: #9b1c1c;             /* Texto vermelho escuro */
+        font-family: sans-serif;
+        font-size: 14px;
+    }
+
+    /* Classe utilitária para esconder a div */
+    .escondido {
+        display: none !important;
+    }
+
     </style>
   </head>
   <body>
@@ -61,6 +82,8 @@
       <h1>Avaliação Escrita</h1>
 
       <form id="provaForm">
+        <input type="hidden" id="infoBrowser" name="navegador_versao" value="">
+        <input type="hidden" name="atividade" value="ADS-D-POO">
         <div class="questao">
           <label for="nome">Nome Completo:</label>
           <input type="text" id="nome" required />
@@ -83,54 +106,305 @@
         </div>
         <button type="submit">Enviar Respostas</button>
       </form>
+      <div id="alerta-erro" class="card-erro escondido">
+        <span class="icone">⚠️</span>
+        <span id="mensagem-erro">Ocorreu um erro inesperado.</span>
+        <button onclick="EsconderErro()" style="margin-left: auto; background: none; border: none; cursor: pointer; color: inherit; font-weight: bold;">✕</button>
+      </div>
     </div>
 
     <script>
+    const SHEETDB_API_URL = "https://sheetdb.io/api/v1/yt8trp7wrpv3r";
+    const LabelButtonSubmit = "Enviar Respostas";
+    
+
+    class ArgumentoInvalidoError extends Error 
+    {
+        constructor(mensagem) 
+        {
+            super(mensagem);
+            this.name = "ArgumentoInvalidoError";
+        }
+    }
+
+    // FUNCOES DO FORMULARIO
+    // =====================
+
+      // Função para capturar informações do navegador e versão no input oculto antes do envio do formulário
+      function ObterInfoNavegador() 
+        {
+            try
+            {
+                const inputOculto = document.getElementById('infoBrowser'); 
+                if (navigator.userAgentData) 
+                {
+                    // Captura as informações de navegador e versão
+                    navigator.userAgentData.getHighEntropyValues(['brand', 'version'])
+                        .then(ua => 
+                        {   // Processa as informações de navegador e versão
+                            const navegadorPrincipal = ua.brands.find(b => b.brand !== 'Not A;Brand');
+                            inputOculto.value = `${navegadorPrincipal.brand} (v${navegadorPrincipal.version})`;
+                        });
+                } 
+                else 
+                {
+                    // Caso o navegador não suporte userAgentData, utiliza o userAgent padrão
+                    inputOculto.value = navigator.userAgent;
+                }
+            }
+            catch (error) {
+                console.error("Erro ao capturar informações do navegador:", error);
+                inputOculto.value = "Navegador não disponível";
+            }
+
+            return inputOculto.value;
+        }
+
+      // Função para capturar os dados do formulário antes do envio
+      // retorna um objeto com os dados do formulário ou null em caso de erro
+      function ObterDadosFormulario() 
+      {
+            const dados = {};
+            try 
+            {
+                dados.nome = document.getElementById("nome").value;
+                dados.data = new Date().toLocaleString("pt-BR");
+                dados.browser = ObterInfoNavegador();
+                dados.questao1 = document.getElementById("q1").value;
+                dados.questao2 = document.getElementById("q2").value;
+                dados.questao3 = document.getElementById("q3").value;
+                dados.questao4 = document.getElementById("q4").value;
+                dados.questao5 = document.getElementById("q5").value;
+                return dados;
+            } 
+            catch (error) 
+            {
+                console.error("Erro ao capturar os dados do formulário:", error);
+                throw new Error("Erro ao capturar os dados do formulário", {cause: error });
+                //alert("Erro ao capturar os dados do formulário.\n\nDetalhes: " + JSON.stringify(error));
+                return null;
+            }
+           
+      }
+
+      // Função para exportar em formato JSON 
+      function ExportarRespostas(json) 
+      {
+            if (!json) throw new ArgumentoInvalidoError("Argumento JSON não fornecido.");
+            
+            try
+            {
+                const blob = new Blob([json], { type: "application/json" });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement("a");
+                a.href = url;
+                a.download = "respostas.json";
+                a.click();
+                URL.revokeObjectURL(url);
+            }
+            catch (error)
+            {
+                console.error("Erro ao baixar o arquivo JSON:", error);
+                throw new Error("Erro ao tentar baixar o arquivo JSON", {cause: error });
+                //alert("Erro ao tentar baixar o arquivo JSON.\n\nDetalhes: " + JSON.stringify(error));
+            }
+      }
+
+      // Função de envio do formulário para o SheetDB 
+      function enviarDadosFormulario(api_url, dados) 
+      { 
+            // INSIRA A SUA URL DO SHEETDB AQUI
+           
+
+            if (!api_url) {
+              alert("URL da API não fornecida.");
+              return false;
+            }
+            if (!dados) {
+              alert("Não é possível enviar. Sem dados do formulário.");
+              return false;
+            }
+            
+            fetch(api_url, 
+            {
+              method: "POST",
+              headers: 
+              {
+                Accept: "application/json",
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify(dados),
+            })
+              .then((response) => response.json())
+              .then((data) => 
+              {
+                alert("Enviado com sucesso! Suas respostas foram gravadas.");
+                document.getElementById("provaForm").reset();
+              })
+              .catch((error) => {
+                console.error("Erro:", error);
+                alert("Erro ao enviar. Tente novamente.\n\nDetalhes: " + JSON.stringify(error));
+              });
+      }
+
+    async function enviarDadosFormularioAsync(api_url, dados) 
+    {
+        if (!api_url) throw new ArgumentoInvalidoError("Argumento api_url não fornecido.");
+        if (!dados) throw new ArgumentoInvalidoError("Argumento dados não fornecido.");
+        try 
+        {
+            const response = await fetch(api_url, {
+                method: "POST",
+                headers: { Accept: "application/json", "Content-Type": "application/json" },
+                body: JSON.stringify(dados)
+            });
+
+            if (!response.ok) throw new Error(`HTTP ${response.status}`);
+
+            const data = await response.json();
+            alert("Enviado com sucesso! Suas respostas foram gravadas.");
+            
+            document.getElementById("provaForm").reset();
+            
+        } 
+        catch (error) 
+        {
+            console.error("Erro ao enviar dados:", error);
+            throw new Error("Erro ao enviar dados.", { cause: error });
+            //throw error;
+            //alert("Erro ao enviar. Tente novamente. \n\nDetalhes: " + JSON.stringify(error));
+        }
+    }
+     
+
+        // SUBMIT FORMULÁRIO
       document
         .getElementById("provaForm")
-        .addEventListener("submit", function (e) {
+        .addEventListener("submit", async function (e) {
           e.preventDefault();
 
-          // INSIRA A SUA URL DO SHEETDB AQUI
-          const SHEETDB_API_URL = "https://sheetdb.io/api/v1/yt8trp7wrpv3r";
+          try
+          {
+            // Desabilitar o botão e mudar a texto para aguarde ...
+            StateSubmitButton(false, "Aguarde...");
 
-          const dados = {
-            data: [
+            var api_url = SHEETDB_API_URL;
+            const dados = capturarDadosFormulario();
+            await enviarDadosFormularioAsync(api_url, dados);
+          } 
+          catch (error) 
+          {
+            console.error("Erro ao enviar dados:", error);
+
+              if (error instanceof ArgumentoInvalidoError) 
               {
-                id: new guid(),
-                nome: document.getElementById("nome").value,
-                data: new Date().toLocaleString("pt-BR"),   // formatar para dd/mm/aaaa hh:mm:ss
-                //turma: document.getElementById("count").value,
-                questao1: document.getElementById("q1").value,
-                questao2: document.getElementById("q2").value,
-                questao3: document.getElementById("q3").value,
-                questao4: document.getElementById("q4").value,
-                questao5: document.getElementById("q5").value,
-                
-              },
-            ],
-          };
+                  alert(error.message);
+                  return;
+              }
 
-          fetch(SHEETDB_API_URL, {
-            method: "POST",
-            headers: {
-              Accept: "application/json",
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(dados),
-          })
-            .then((response) => response.json())
-            .then((data) => {
-              alert(
-                "Enviado com sucesso! Suas respostas foram gravadas.",
-              );
-              document.getElementById("provaForm").reset();
-            })
-            .catch((error) => {
-              console.error("Erro:", error);
-              alert("Erro ao enviar. Tente novamente.");
-            });
+              alert("Não foi possível enviar os dados");
+              MostrarErro("Erro ao enviar dados: \n\nDetalhes:\n" + JSON.stringify(error));
+
+              if (confirm("Erro ao enviar dados. Deseja baixar o arquivo com as respostas"))
+              {
+                  ExportarRespostas();
+              }
+          }
+          finally
+          {
+            StateSubmitButton(true, LabelButtonSubmit);
+          }
+
+          function StateSubmitButton(enabled, text)
+          {
+             const submitButton = GetSubmitButton();
+             if (!enabled)
+                 submitButton.disabled = true;
+             if (text !== undefined)
+                 submitButton.textContent = text;
+             if (text == null)
+                submitButton.textContent = LabelButtonSubmit;
+          }
+          function GetSubmitButton() {
+              return document.querySelector("#provaForm button[type='submit']");
+          }
+
         });
+
+
+        // FUNCOES AUXILIARES
+        // =====================
+        function MostrarErro(mensagem) 
+        {
+            const alertaErro = document.getElementById("alerta-erro");
+            if (alertaErro) {
+                alertaErro.querySelector(".mensagem").textContent = mensagem;
+                alertaErro.classList.remove("escondido");
+                console.error(mensagem);
+            }
+        }
+        function EsconderErro() 
+        {
+            const alertaErro = document.getElementById("alerta-erro");
+            if (alertaErro) {
+                alertaErro.classList.add("escondido");
+            }
+        }
+
+
+          // INSIRA A SUA URL DO SHEETDB AQUI
+       //   const SHEETDB_API_URL = "https://sheetdb.io/api/v1/yt8trp7wrpv3r";
+
+
+          // Captura a informação do navegador e versão no input oculto
+        //   const dados = capturarDadosFormulario();
+        //   if (!dados) {
+        //     return;
+        //   }
+
+        //   const dados3 = {
+        //     data: [
+        //       {
+        //         id: new guid(),
+        //         nome: document.getElementById("nome").value,
+        //         data: new Date().toLocaleString("pt-BR"),   // formatar para dd/mm/aaaa hh:mm:ss
+        //         browser: document.getElementById("infoBrowser").value,
+        //         questao1: document.getElementById("q1").value,
+        //         questao2: document.getElementById("q2").value,
+        //         questao3: document.getElementById("q3").value,
+        //         questao4: document.getElementById("q4").value,
+        //         questao5: document.getElementById("q5").value,
+                
+        //       },
+        //     ],
+        //   };
+          
+
+        //   fetch(SHEETDB_API_URL, {
+        //     method: "POST",
+        //     headers: {
+        //       Accept: "application/json",
+        //       "Content-Type": "application/json",
+        //     },
+        //     body: JSON.stringify(dados),
+        //   })
+        //     .then((response) => response.json())
+        //     .then((data) => {
+        //       alert(
+        //         "Enviado com sucesso! Suas respostas foram gravadas.",
+        //       );
+        //       document.getElementById("provaForm").reset();
+        //     })
+        //     .catch((error) => {
+        //       console.error("Erro:", error);
+        //       alert("Erro ao enviar. Tente novamente.");
+        //     });
+        // });
+
+
+       
+
+    
     </script>
   </body>
 </html>
