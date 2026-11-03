@@ -160,21 +160,40 @@
             return inputOculto.value;
         }
 
+     async function ObterInfoNavegadorAsync() 
+     {
+        try 
+        {            
+            if (navigator.userAgentData) 
+            {
+                const ua = await navigator.userAgentData.getHighEntropyValues(['brand', 'version']);
+                const navegador = ua.brands.find(b => b.brand !== 'Not A;Brand');
+                return navegador ? `${navegador.brand} (v${navegador.version})` : navigator.userAgent;
+            }
+            return navigator.userAgent;
+        } 
+        catch (error) 
+        {
+            console.error("Erro ao capturar informações do navegador:", error);
+            return "Navegador não disponível";
+        }
+    }
+
       // Função para capturar os dados do formulário antes do envio
       // retorna um objeto com os dados do formulário ou null em caso de erro
-      function ObterDadosFormulario() 
+      async function ObterDadosFormularioAsync() 
       {
             const dados = {};
             try 
             {
                 dados.nome = document.getElementById("nome").value;
                 dados.data = new Date().toLocaleString("pt-BR");
-                dados.browser = ObterInfoNavegador();
+                dados.browser = await ObterInfoNavegadorAsync();
                 dados.questao1 = document.getElementById("q1").value;
                 dados.questao2 = document.getElementById("q2").value;
                 dados.questao3 = document.getElementById("q3").value;
-                dados.questao4 = document.getElementById("q4").value;
-                dados.questao5 = document.getElementById("q5").value;
+                //dados.questao4 = document.getElementById("q4").value;
+                //dados.questao5 = document.getElementById("q5").value;
                 return dados;
             } 
             catch (error) 
@@ -182,7 +201,6 @@
                 console.error("Erro ao capturar os dados do formulário:", error);
                 throw new Error("Erro ao capturar os dados do formulário", {cause: error });
                 //alert("Erro ao capturar os dados do formulário.\n\nDetalhes: " + JSON.stringify(error));
-                return null;
             }
            
       }
@@ -289,7 +307,7 @@
             StateSubmitButton(false, "Aguarde...");
 
             var api_url = SHEETDB_API_URL;
-            const dados = capturarDadosFormulario();
+            const dados = await ObterDadosFormularioAsync();
             await enviarDadosFormularioAsync(api_url, dados);
           } 
           catch (error) 
