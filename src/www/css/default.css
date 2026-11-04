@@ -1,0 +1,69 @@
+ body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f4f9;
+        padding: 20px;
+      }
+      .container {
+        max-width: 600px;
+        background: white;
+        padding: 30px;
+        margin: 0 auto;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      }
+      h1 {
+        text-align: center;
+        color: #333;
+      }
+      .questao {
+        margin-bottom: 20px;
+      }
+      label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: bold;
+      }
+      input[type="text"],
+      textarea {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        box-sizing: border-box;
+      }
+      textarea {
+        height: 100px;
+      }
+      button {
+        background-color: #007bff;
+        color: white;
+        border: none;
+        padding: 12px;
+        font-size: 16px;
+        border-radius: 4px;
+        cursor: pointer;
+        width: 100%;
+      }
+      button:hover {
+        background-color: #0056b3;
+      }
+
+      /* Estilo para mensagens de erro */       
+    .card-erro {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 15px;
+        margin: 15px 0;
+        background-color: #fde8e8; /* Vermelho bem claro */
+        border: 1px solid #f8b4b4;    /* Borda vermelha suave */
+        border-radius: 6px;
+        color: #9b1c1c;             /* Texto vermelho escuro */
+        font-family: sans-serif;
+        font-size: 14px;
+    }
+
+    /* Classe utilitária para esconder a div */
+    .escondido {
+        display: none !important;
+    }
