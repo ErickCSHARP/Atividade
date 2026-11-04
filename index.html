@@ -189,10 +189,10 @@
                 dados.nome = document.getElementById("nome").value;
                 dados.data = new Date().toLocaleString("pt-BR");
                 dados.browser = await ObterInfoNavegadorAsync();
-                dados.questao1 = document.getElementById("q1").value;
-                dados.questao2 = document.getElementById("q2").value;
-                dados.questao3 = document.getElementById("q3").value;
-                //dados.questao4 = document.getElementById("q4").value;
+                dados.q1 = document.getElementById("q1").value;
+                dados.q2 = document.getElementById("q2").value;
+                dados.q3 = document.getElementById("q3").value;
+                dados.q4 = document.getElementById("q4").value;
                 //dados.questao5 = document.getElementById("q5").value;
                 return dados;
             } 
@@ -251,7 +251,7 @@
                 Accept: "application/json",
                 "Content-Type": "application/json",
               },
-              body: JSON.stringify(dados),
+              body: JSON.stringify({ data: [dados] })
             })
               .then((response) => response.json())
               .then((data) => 
@@ -273,8 +273,12 @@
         {
             const response = await fetch(api_url, {
                 method: "POST",
-                headers: { Accept: "application/json", "Content-Type": "application/json" },
-                body: JSON.stringify(dados)
+                headers: 
+                {
+                   Accept: "application/json",
+                   "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ data: [dados] })
             });
 
             if (!response.ok) throw new Error(`HTTP ${response.status}`);
@@ -336,8 +340,9 @@
           function StateSubmitButton(enabled, text)
           {
              const submitButton = GetSubmitButton();
-             if (!enabled)
-                 submitButton.disabled = true;
+
+             submitButton.disabled = !enabled;
+
              if (text !== undefined)
                  submitButton.textContent = text;
              if (text == null)
