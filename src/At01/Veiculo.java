@@ -1,3 +1,5 @@
+package At01;
+
 /**
  * Classe base que representa um veículo.
  * Armazena os dados comuns a caminhões e ônibus.
