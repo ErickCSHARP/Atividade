@@ -101,7 +101,7 @@ document
     ?.addEventListener("submit", async function (e) {
         e.preventDefault();
 
-        const sendOk = false;
+        let sendOk = false;
         let dados = null;
         try {
             // Desabilitar o botão e mudar a texto para aguarde ...
@@ -131,7 +131,7 @@ document
             StateSubmitButton(true, LabelButtonSubmit);
         }
 
-        if (!sendOk) {
+        if (sendOk === false) {
              if (confirm("Erro ao enviar dados. Deseja baixar o arquivo com as respostas")) {
                 ExportarRespostas(JSON.stringify(dados) );
             }
