@@ -1,0 +1,8 @@
+.card-erro { display: flex; align-items: center; gap: 10px; padding: 12px 15px; border-radius: 6px; margin: 10px 0; }
+.card-erro.escondido { display: none; }
+.card-erro .icone { font-size: 18px; }
+.card-erro button { align-self: flex-start; width: auto; margin-left: auto; background: none; border: none; cursor: pointer; color: inherit; font-weight: bold; font-size: 16px; }
+.card-erro.sucesso { background: #d1e7dd; color: #0f5132; border: 1px solid #badbcc; }
+.card-erro.info { background: #cff4fc; color: #055160; border: 1px solid #b6effb; }
+.card-erro.aviso { background: #fff3cd; color: #664d03; border: 1px solid #ffecb5; }
+.card-erro.erro { background: #f8d7da; color: #842029; border: 1px solid #f5c2c7; }

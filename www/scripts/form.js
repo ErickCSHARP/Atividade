@@ -1,10 +1,37 @@
 import { ArgumentoInvalidoError } from "./Execptions.js";
 import { FormularioError } from "./Execptions.js";
+import SheetDB,{ SheetDbUrl } from "./SheetDB.js";
+import Alerta from "../components/alert/alerta.js";
 
 const SHEETDB_API_URL = "https://sheetdb.io/api/v1/yt8trp7wrpv3r";
+
 const LabelButtonSubmit = "Enviar Respostas";
+const FORM_TOKEN_ID = "form-token";
+const FORM_PROVA_ID = "provaForm";
+const FORM_SUBMIT_BUTTON_ID = "btn-submit";
+
+let table_name = "p1";
+
+
+const sheetUrl = new SheetDbUrl(SHEETDB_API_URL, table_name);
+const sheetDb = new SheetDB(sheetUrl.getUrl());
+
+
 // FUNCOES DO FORMULARIO
 // =====================
+
+function GerarFormularioToken()
+{
+    const tokenUnico = crypto.randomUUID();
+
+    // 2. Encontra o campo oculto no formulário e define seu valor
+    const inputToken = document.getElementById(FORM_TOKEN_ID);
+    if (inputToken) {
+        inputToken.value = tokenUnico;
+    }
+
+    console.log("Token gerado com sucesso:", tokenUnico);
+}
 
 // Função para capturar informações do navegador e versão no input oculto antes do envio do formulário
 async function ObterInfoNavegadorAsync() {
@@ -88,7 +115,7 @@ async function enviarDadosFormularioAsync(api_url, dados) {
         if (!response.ok) throw new Error(`HTTP ${response.status}`);
 
         const data = await response.json();
-        alert("Enviado com sucesso! Suas respostas foram gravadas.");
+        Alerta.mostrar("Enviado com sucesso! Suas respostas foram gravadas.", "sucesso");
 
         document.getElementById("provaForm").reset();
 
@@ -100,25 +127,27 @@ async function enviarDadosFormularioAsync(api_url, dados) {
 
 }
 
+async function submitFormAsync(submitEvent)
+{
+    submitEvent.preventDefault();
+    const button = submitEvent.submitter;
+   
+    if (!button) throw new Error("Botão de envio não encontrado.");
 
-// SUBMIT FORMULÁRIO
-document
-    .getElementById("provaForm")
-    ?.addEventListener("submit", async function (e) {
-        e.preventDefault();
-
-        let sendOk = false;
+      let sendOk = false;
         let dados = null;
         try {
             // Desabilitar o botão e mudar a texto para aguarde ...
             LimparErro();
             StateSubmitButton(false, "Aguarde...");
 
-            var api_url = SHEETDB_API_URL;
+            var api_url = sheetUrl.getUrl();//SHEETDB_API_URL;
             dados = await ObterDadosFormularioAsync();
             await enviarDadosFormularioAsync(api_url, dados);
             sendOk = true;
-            document.getElementById("provaForm").reset();
+            document.getElementById(FORM_PROVA_ID).reset();
+            Alerta.mostrar("Enviado com sucesso! Suas respostas foram gravadas.", "sucesso");
+
         }
         catch (error) {
             console.error("Erro ao enviar dados:", error);
@@ -130,10 +159,11 @@ document
 
             alert("Não foi possível enviar os dados");
             MostrarErro("Erro ao enviar dados: \n\nDetalhes:\n" + JSON.stringify(error));
-
+            Alerta.mostrar("Erro ao enviar dados - detalhes:\n" + JSON.stringify(error), "erro");
             
         }
-        finally {
+        finally 
+        {
             StateSubmitButton(true, LabelButtonSubmit);
         }
 
@@ -143,7 +173,9 @@ document
             }
         }
 
-        function StateSubmitButton(enabled, text) {
+        
+
+    function StateSubmitButton(enabled, text) {
             const submitButton = GetSubmitButton();
             if (enabled === undefined || enabled === null) {
                 submitButton.disabled = true;
@@ -155,17 +187,37 @@ document
             if (text == null)
                 submitButton.textContent = LabelButtonSubmit;
 
+            // Aplicando estilo ao estado do botao
+            if (submitButton.disabled) {
+                submitButton.classList.add("button-disabled");
+            } else {
+                submitButton.classList.remove("button-disabled");
+            }
+
             console.log(`Submit button state disabled: ${submitButton.disabled}, text: ${text}`);
         }
-        function GetSubmitButton() {
+    function GetSubmitButton() {
             return document.querySelector("#provaForm button[type='submit']");
         }
+}
 
-    });
+
+
+
+// EVENTOS
+document
+    .getElementById(FORM_PROVA_ID)
+    ?.addEventListener("submit", submitFormAsync);
 
 document
     .getElementById('btn-fechar-erro')
-    ?.addEventListener('click', EsconderErro);    
+    ?.addEventListener('click', EsconderErro);
+
+document
+    .getElementById(FORM_PROVA_ID)
+    ?.addEventListener("submit", submitFormAsync);
+
+window.addEventListener('DOMContentLoaded', GerarFormularioToken);
 
 // FUNCOES AUXILIARES
 // =====================
@@ -197,4 +249,18 @@ function EsconderErro() {
         alertaErro.classList.add("escondido");
     }
 }
+
+
+
+
+
+// function GetUrlSheetDB() {
+//     const url = table_name ? `${SHEETDB_API_URL}/search?sheet=${table_name}` : SHEETDB_API_URL;
+//     // const url = table_name ? `${SHEETDB_API_URL}/?sheet=${table_name}` : SHEETDB_API_URL;
+//     return url;
+// }
+
+
+
+// Executa a função assim que a página carregar
 
