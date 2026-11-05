@@ -34,6 +34,12 @@ async function ObterDadosFormularioAsync() {
         dados.data.q1 = document.getElementById("q1").value;
         dados.data.q2 = document.getElementById("q2").value;
         dados.data.q3 = document.getElementById("q3").value;
+        dados.data.q4 = document.getElementById("q4").value;
+        dados.data.q5 = document.getElementById("q5").value;
+        dados.data.q6 = document.getElementById("q6").value;
+        dados.data.q7 = document.getElementById("q7").value;
+        dados.data.q8 = document.getElementById("q8").value;
+        dados.data.q9 = document.getElementById("q9").value;
         //dados.questao4 = document.getElementById("q4").value;
         //dados.questao5 = document.getElementById("q5").value;
         return dados;
